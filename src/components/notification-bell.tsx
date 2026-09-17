@@ -22,19 +22,31 @@ export function NotificationBell() {
   const load = useCallback(async () => {
     try {
       const res = await fetch("/api/notifications", { cache: "no-store" });
-      if (!res.ok) return;
+      if (!res.ok) return null;
       const data = (await res.json()) as { items: NotificationItem[] };
-      setItems(data.items);
-      setLastCount(data.items.filter((i) => !i.isRead).length);
+      return data.items;
     } catch {
       /* diamkan bila jaringan gagal */
+      return null;
     }
   }, []);
 
   useEffect(() => {
-    void load();
-    const timer = setInterval(load, 15000); // pembaruan otomatis setiap 15 detik
-    return () => clearInterval(timer);
+    let active = true;
+    const tick = async () => {
+      const data = await load();
+      if (!active || !data) return;
+      setItems(data);
+      setLastCount(data.filter((i) => !i.isRead).length);
+    };
+    void tick();
+    const timer = setInterval(() => {
+      void tick();
+    }, 15000); // pembaruan otomatis setiap 15 detik
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
   }, [load]);
 
   useEffect(() => {

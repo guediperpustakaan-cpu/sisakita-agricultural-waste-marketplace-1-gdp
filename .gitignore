@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+build
+.env*.local
+.env
+*.log
+next-env.d.ts
+drizzle/

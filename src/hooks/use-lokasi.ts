@@ -1,36 +1,40 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 const KEY = "sisakita_lokasi";
 
 export type Lokasi = { lat: number; lng: number; label?: string };
 
+function readLokasi(): Lokasi | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) return JSON.parse(raw) as Lokasi;
+  } catch {
+    /* abaikan */
+  }
+  return null;
+}
+
 export function useLokasi() {
-  const [lokasi, setLokasi] = useState<Lokasi | null>(null);
+  const [lokasi, setLokasi] = useState<Lokasi | null>(readLokasi);
   const [memuat, setMemuat] = useState(false);
   const [galat, setGalat] = useState<string | null>(null);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) setLokasi(JSON.parse(raw) as Lokasi);
-    } catch {
-      /* abaikan */
-    }
-  }, []);
-
   const simpan = useCallback((next: Lokasi) => {
     setLokasi(next);
-    try {
-      localStorage.setItem(KEY, JSON.stringify(next));
-    } catch {
-      /* abaikan */
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(KEY, JSON.stringify(next));
+      } catch {
+        /* abaikan */
+      }
     }
   }, []);
 
   const deteksi = useCallback(() => {
-    if (!("geolocation" in navigator)) {
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
       setGalat("Perangkat tidak mendukung deteksi lokasi.");
       return;
     }

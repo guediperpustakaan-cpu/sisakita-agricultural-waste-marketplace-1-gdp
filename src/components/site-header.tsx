@@ -20,8 +20,10 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   const items = useCartStore((s) => s.items);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
-  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    setMounted(true);
+    setOpen(false);
+  }, [pathname]);
 
   const dashboardHref =
     user?.role === "ADMIN"
