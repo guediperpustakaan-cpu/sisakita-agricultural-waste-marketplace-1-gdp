@@ -4,6 +4,7 @@ import Link from "next/link";
 import "./globals.css";
 import { getCurrentUser } from "@/lib/auth";
 import { SiteHeader } from "@/components/site-header";
+import { TrakteerWidget } from "@/components/trakteer-widget";
 import { APP_NAME } from "@/lib/labels";
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className="flex min-h-screen flex-col bg-[#F4F4F4] text-neutral-900 antialiased">
         <SiteHeader user={user} />
         <main className="flex-1">{children}</main>
+        <TrakteerWidget />
         <footer className="mt-16 border-t border-neutral-200 bg-white">
           <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
             <div>
@@ -82,8 +84,16 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             </div>
           </div>
           <div className="border-t border-neutral-200 px-4 py-5 text-center text-xs text-neutral-500">
-            © {new Date().getFullYear()} SisaKita. Dibangun untuk ekonomi sirkular
-            Indonesia.
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+              <span>© {new Date().getFullYear()} SisaKita.</span>
+              <a
+                href="/api/source"
+                className="font-semibold text-[#2F8F2F] hover:underline"
+              >
+                ⬇ Download Source Code
+              </a>
+            </div>
+            <p className="mt-1">Open Source oleh MZF - 2026 · Dibangun untuk ekonomi sirkular Indonesia.</p>
           </div>
         </footer>
       </body>
